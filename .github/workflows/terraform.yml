@@ -55,7 +55,7 @@ jobs:
         run: terragrunt init -input=false
 
       - name: Terragrunt Plan
-        run: terragrunt plan -input=false -no-color
+        run: terragrunt plan -input=false -no-color -out="$GITHUB_WORKSPACE/tfplan"
 
       - name: Terragrunt Apply
-        run: terragrunt apply -input=false -no-color tfplan
+        run: terragrunt apply -input=false -no-color "$GITHUB_WORKSPACE/tfplan"
