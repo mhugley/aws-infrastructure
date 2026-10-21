@@ -1,0 +1,43 @@
+
+name: Terraform PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "modules/**"
+      - "live/**"
+      - ".github/workflows/terraform-pr.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.14.6"
+          terraform_wrapper: false
+
+      - name: Check Terraform Formatting
+        run: terraform fmt -check -recursive modules/
+
+      - name: Initialize Terraform Module
+        working-directory: modules/vpc
+        run: terraform init -backend=false -input=false
+
+      - name: Validate Terraform Module
+        working-directory: modules/vpc
+        run: terraform validate -no-color
+
+      - name: Validation Complete
+        run: echo "Terraform validation successful"
