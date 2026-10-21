@@ -1,3 +1,4 @@
+
 name: AWS Terraform Deployment
 
 on:
@@ -7,9 +8,18 @@ permissions:
   id-token: write
   contents: read
 
+concurrency:
+  group: terraform-dev-vpc
+  cancel-in-progress: false
+
 jobs:
   terraform:
+    name: Terragrunt Plan
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: live/dev/vpc
 
     steps:
       - name: Checkout repository
@@ -23,3 +33,26 @@ jobs:
 
       - name: Verify AWS identity
         run: aws sts get-caller-identity
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.14.6"
+          terraform_wrapper: false
+
+      - name: Install Terragrunt
+        uses: autero1/action-terragrunt@v3
+        with:
+          terragrunt-version: "latest"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check versions
+        run: |
+          terraform version
+          terragrunt --version
+
+      - name: Terragrunt Init
+        run: terragrunt init -input=false
+
+      - name: Terragrunt Plan
+        run: terragrunt plan -input=false -no-color
