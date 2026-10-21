@@ -56,3 +56,6 @@ jobs:
 
       - name: Terragrunt Plan
         run: terragrunt plan -input=false -no-color
+
+      - name: Terragrunt Apply
+        run: terragrunt apply -input=false -no-color tfplan
