@@ -1,7 +1,15 @@
 
 name: AWS Terraform Deployment
 
-on:
+oon:
+  push:
+    branches:
+      - main
+    paths:
+      - "modules/**"
+      - "live/**"
+      - ".github/workflows/terraform.yml"
+
   workflow_dispatch:
 
 permissions:
