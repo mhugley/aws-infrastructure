@@ -50,26 +50,24 @@ jobs:
         run: terragrunt plan -input=false -no-color -out="$GITHUB_WORKSPACE/tfplan"
       
       - name: Publish Terraform Plan
+        shell: bash
         run: |
           terragrunt show -no-color "$GITHUB_WORKSPACE/tfplan" > "$GITHUB_WORKSPACE/plan.txt"
 
-          {
-            echo "## Terraform Plan — Dev VPC"
-            echo ""
-            echo "Review the proposed infrastructure changes before approving deployment."
-            echo ""
-            echo '```terraform'
-            cat "$GITHUB_WORKSPACE/plan.txt"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "## Terraform Plan - Dev VPC" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Review the proposed changes before approving deployment." >> "$GITHUB_STEP_SUMMARY"
+          echo '```terraform' >> "$GITHUB_STEP_SUMMARY"
+          cat "$GITHUB_WORKSPACE/plan.txt" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Terraform Plan
-          uses: actions/upload-artifact@v4
-          with:
-            name: terraform-plan
-            path: tfplan
-            retention-days: 1
-            if-no-files-found: error
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: tfplan
+          retention-days: 1
+          if-no-files-found: error
 
   apply:
     name: Terragrunt Apply
