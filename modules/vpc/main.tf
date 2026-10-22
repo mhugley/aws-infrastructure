@@ -16,6 +16,8 @@ provider "aws" {
   region = "us-east-1"
 }
 
+#checkov:skip=CKV2_AWS_11:Flow Logs deferred for cost-controlled development VPC
+
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
@@ -36,6 +38,16 @@ resource "aws_subnet" "private" {
 
   tags = {
     Name        = "personal-dev-private-subnet"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
+}
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name        = "personal-dev-default-sg"
     Environment = "dev"
     ManagedBy   = "Terraform"
   }
